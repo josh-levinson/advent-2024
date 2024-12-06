@@ -13,48 +13,25 @@ total = 0
 @width = contents[0].length
 
 def check_char(x, y)
-  matches = 0
-  # y is backwards because it starts in first row 0, and goes down to last row
-  # check up
-  matches += 1 if check_with_direction(x, y, 0, -1)
-  # check down
-  matches += 1 if check_with_direction(x, y, 0, 1)
-  # check forward
-  matches += 1 if check_with_direction(x, y, 1, 0)
-  # check back
-  matches += 1 if check_with_direction(x, y, -1, 0)
-  # check diagonal up/forward
-  matches += 1 if check_with_direction(x, y, 1, -1)
-  # check diagonal down/forward
-  matches += 1 if check_with_direction(x, y, 1, 1)
-  # check diagonal up/back
-  matches += 1 if check_with_direction(x, y, -1, -1)
-  # check diagonal down/back
-  matches += 1 if check_with_direction(x, y, -1, 1)
+  # if we're at the edge of the grid
+  return false if x < 1 || x >= @width - 1|| y < 1 || y >= @height - 1
 
-  matches
-end
+  top_left = @xmas_grid[y - 1][x - 1]
+  top_right = @xmas_grid[y - 1][x + 1]
+  bottom_left = @xmas_grid[y + 1][x - 1]
+  bottom_right = @xmas_grid[y + 1][x + 1]
 
-def check_with_direction(start_x, start_y, x, y)
-  max_x = start_x + (3 * x)
-  return false if max_x < 0 || max_x >= @width
+  values = [top_left, top_right, bottom_left, bottom_right]
+  return true if values.count('M') == 2 && values.count('S') == 2 && top_left != bottom_right
 
-  max_y = start_y + (3 * y)
-  return false if max_y < 0 || max_y >= @height
-
-  return false unless @xmas_grid[start_y + y][start_x + x] == 'M'
-  return false unless @xmas_grid[start_y + (2 * y)][start_x + (2 * x)] == 'A'
-  return false unless @xmas_grid[start_y + (3 * y)][start_x + (3 * x)] == 'S'
-
-  true
-
+  false
 rescue
   debugger
 end
 
 @xmas_grid.each_with_index do |row, y|
   row.each_with_index do |char, x|
-    total += check_char(x, y) if char == 'X'
+    total += 1 if char == 'A' && check_char(x, y)
   end
 end
 
